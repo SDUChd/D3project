@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+	</head>
+	<body>
+		<svg id="mysvg" width="1920" height="1080">
+			
+		</svg>
+	</body>
+	<script src="js/d3.js" type="text/javascript"></script>
+	<script>
+
+			var svg=d3.select("svg")
+			var marginleft=70
+			d3.select("body").style("background-color","#cfcfcf")
+			d3.csv("GPA.csv",function(error,data){
+				if(error)
+				console.log("error!")
+				else{
+					console.log(data)
+					var label=[]
+					var gpas=[]
+					for(var i in data){
+						label.push(data[i]["name"])
+						gpas.push(data[i]["GPA"])
+					}
+					label.pop()
+					gpas.pop()
+					
+					
+					console.log(label)
+					console.log(gpas)
+					var linear = d3.scaleLinear()
+        			.domain([0,5])
+        			.range([0, 600]);
+        			
+        			//画矩形
+        			svg.selectAll("rect2").data(gpas).enter()
+        			.append("rect")
+        			.attr("x",marginleft)
+        			.attr("y",function(d,i){
+        				return i*60
+        			})
+        			.attr("height",50-5)
+        			.attr("width",function(d){
+        				return linear(d)
+        			})
+        			.attr("fill",function(d,i){
+        				if(d<1)
+        				return "red"
+        				else if(d<2)
+        				return "orange"
+        				else if(d<3)
+        				return "yellow"
+        				else if(d<4)
+        				return "blue"
+        				else 
+        				return "gold"
+        			})
+        			.attr("stroke","black")
+        			
+        			//添加X轴
+        			var axisx = d3.axisTop(linear)
+        			.tickSize(1080)
+        			.ticks(10)
+        			svg.append("g").attr("transform","translate("+marginleft+","+gpas.length*61+")").call(axisx)
+        			
+        			//修改X轴刻度
+        			d3.selectAll(".tick line").attr("stroke-dasharray","2,5")
+        			d3.selectAll(".tick text").attr("y",15)
+        			d3.select(".domain").attr("d","M0.5,-1080V0.5H600.5V-6")
+        			
+        			//添加人名
+        			svg.selectAll("label").data(label).enter()
+        			.append("text")
+        			.attr("y",function(d,i){
+        				return (i+1)*60-30
+        			})
+        			.text(function(d){
+        				return d
+        			})
+        			.attr("stroke",function(d,i){
+        				if(gpas[i]<1)
+        				return "white"
+        				else if(gpas[i]<2)
+        				return "black"
+        				else if(gpas[i]<3)
+        				return "black"
+        				else if(gpas[i]<4)
+        				return "gold"
+        				else 
+        				return"black"
+        			})
+        			.attr("fill",function(d,i){
+        				if(gpas[i]<1)
+        				return "white"
+        				else if(gpas[i]<2)
+        				return "black"
+        				else if(gpas[i]<3)
+        				return "black"
+        				else if(gpas[i]<4)
+        				return "gold"
+        				else 
+        				return"black"
+        			})
+        			
+        			
+        			//显示分数
+        			svg.selectAll("label").data(gpas).enter()
+        			.append("text")
+        			.attr("x",function(d,i){
+        				return linear(d)+marginleft+5
+        			})
+        			.attr("y",function(d,i){
+        				return (i+1)*60-30
+        			})
+        			.text(function(d){
+        				return d
+        			})
+        			
+				}
+			})
+			
+		
+	</script>
+</html>
